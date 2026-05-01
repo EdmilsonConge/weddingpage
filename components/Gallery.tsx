@@ -26,6 +26,25 @@ function SkeletonCard() {
   return <div className="aspect-square rounded-xl bg-gold/10 animate-pulse" />
 }
 
+function DownloadIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  )
+}
+
 function RefreshIcon() {
   return (
     <svg
@@ -50,6 +69,24 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null)
+
+  const handleDownload = useCallback(async (photo: Photo) => {
+    try {
+      const response = await fetch(photo.url, { mode: 'cors' })
+      const blob = await response.blob()
+      const objectUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = objectUrl
+      a.download = `keyla_jesus_${photo.id.split('/').pop() ?? 'foto'}`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(objectUrl)
+    } catch {
+      const downloadUrl = photo.url.replace('/upload/', '/upload/fl_attachment/')
+      window.open(downloadUrl, '_blank')
+    }
+  }, [])
 
   const fetchPhotos = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true)
@@ -189,6 +226,13 @@ export default function Gallery() {
             <p className="text-white/50 text-sm mt-0.5">
               {formatDate(selectedPhoto.uploadedAt)} às {formatTime(selectedPhoto.uploadedAt)}
             </p>
+            <button
+              onClick={() => handleDownload(selectedPhoto)}
+              className="mt-3 inline-flex items-center gap-2 text-gold border border-gold/40 rounded-full px-5 py-1.5 text-xs font-medium hover:bg-gold/10 transition-colors"
+            >
+              <DownloadIcon />
+              Descarregar
+            </button>
           </div>
 
           {/* Arrow Navigation */}

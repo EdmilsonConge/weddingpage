@@ -76,9 +76,16 @@ export default function UploadForm() {
         body: JSON.stringify({ guestName: guestName.trim() }),
       })
 
-      if (!signRes.ok) throw new Error('Falha ao obter credenciais de upload')
+      if (!signRes.ok) {
+        const errData = await signRes.json().catch(() => ({}))
+        throw new Error(errData.error ?? 'Falha ao obter credenciais de upload')
+      }
 
       const { signature, timestamp, apiKey, cloudName, folder, context } = await signRes.json()
+
+      if (!cloudName || !apiKey) {
+        throw new Error('Credenciais Cloudinary não configuradas. Configure o ficheiro .env.local.')
+      }
 
       for (let i = 0; i < files.length; i++) {
         const formData = new FormData()
@@ -94,7 +101,10 @@ export default function UploadForm() {
           { method: 'POST', body: formData },
         )
 
-        if (!uploadRes.ok) throw new Error('Falha no upload da foto')
+        if (!uploadRes.ok) {
+          const errData = await uploadRes.json().catch(() => ({}))
+          throw new Error(errData.error?.message ?? 'Falha no upload da foto')
+        }
 
         setProgress(Math.round(((i + 1) / files.length) * 100))
       }

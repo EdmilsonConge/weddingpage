@@ -189,7 +189,7 @@ export default function Gallery() {
         ))}
       </div>
 
-      {/* Modal */}
+      {/* Modal   */}
       {selectedPhoto && (
         <div
           className="fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-4 animate-fade-in"
@@ -235,7 +235,7 @@ export default function Gallery() {
             </button>
           </div>
 
-          {/* Arrow Navigation */}
+          {/* Arrow   Navigation */}
           {photos.length > 1 && (
             <>
               {photos.findIndex((p) => p.id === selectedPhoto.id) > 0 && (

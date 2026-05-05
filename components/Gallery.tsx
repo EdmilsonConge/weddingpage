@@ -217,7 +217,6 @@ export default function Gallery() {
               height={selectedPhoto.height}
               className="max-h-[80vh] w-auto h-auto object-contain"
               style={{ maxWidth: '90vw' }}
-              priority
             />
           </div>
 
